@@ -1,23 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ImageLoader.IoC;
+using System;
+using System.Reflection;
 using System.Web;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Web.Security;
-using System.Web.SessionState;
-using System.Web.Http;
 
 namespace ImageLoader
 {
     public class Global : HttpApplication
     {
-        void Application_Start(object sender, EventArgs e)
+        private void Application_Start(object sender, EventArgs e)
         {
             // Code that runs on application startup
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);            
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            #region Autofac
+
+            new Startup().Configuration(GlobalConfiguration.Configuration, GetAssembly());
+
+            #endregion Autofac
         }
+
+        #region Assembly
+
+        /// <summary>
+        /// Get Assembly
+        /// </summary>
+        /// <returns></returns>
+        private Assembly[] GetAssembly()
+        {
+            return new[]
+            {
+                Assembly.Load("ImageLoader")
+            };
+        }
+
+        #endregion Assembly
     }
 }
